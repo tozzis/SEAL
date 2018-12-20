@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 public class GlobalValue {
     
     public static String secretKey;
-    public static long EXPIRATION_TIME = 1000 * 600;
+    public static long EXPIRATION_TIME = 1000 * 60000;
 
     @Value("${authenservice.jwt.secret}")
     public void setSecretKey(String secretKey) {
