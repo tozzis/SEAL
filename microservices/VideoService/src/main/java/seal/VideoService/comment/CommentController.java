@@ -10,30 +10,36 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import seal.VideoService.user.User;
+import seal.VideoService.user.UserAdapter;
 
-@CrossOrigin
 @RestController
+@CrossOrigin(origins = "*", maxAge = 3600)
 public class CommentController {
     
     @Autowired
     private CommentService commentService;
     
+    @Autowired
+    private UserAdapter userAdapter;
+    
     @RequestMapping(path = "/comments",method = RequestMethod.GET)
     public ResponseEntity<List<Comment>> getAllCommentInSystem() {
         List<Comment> comment = commentService.getAllComment();
-        return new ResponseEntity<List<Comment>>(comment, HttpStatus.OK);
+        return new ResponseEntity<>(comment, HttpStatus.OK);
     }
     
-    @RequestMapping(path = "/video/{videoId)/comments", method = RequestMethod.GET)
+    @RequestMapping(path = "/comments/video/{videoId}", method = RequestMethod.GET)
     public ResponseEntity<List<Comment>> getAllCommentInThatVideo(@PathVariable String videoId) {
         List<Comment> comment = commentService.getCommentByVideoId(videoId);
-        return new ResponseEntity<List<Comment>>(comment, HttpStatus.OK);
+        return new ResponseEntity<>(comment, HttpStatus.OK);
     }
     
-    @RequestMapping(path = "/video/{videoId}/comment", method = RequestMethod.POST)
-    public ResponseEntity<Comment> saveCommentFromUserToSystem(@PathVariable String videoId, @RequestBody Comment commentData) {
-        commentData.setVideoId(videoId);
-        Comment comment = commentService.saveCommentFromController(commentData);
-        return new ResponseEntity<Comment>(comment,HttpStatus.OK);
+    @RequestMapping(path = "/comments/video/{videoId}", method = RequestMethod.POST)
+    public ResponseEntity<Comment> saveCommentFromUserToSystem(@PathVariable String videoId, @RequestBody CommentRequest commentData) {
+        User user = userAdapter.getUserDetail(commentData.getUserId());
+        Comment comment = new Comment(user, videoId, commentData.getComment());
+        commentService.saveCommentFromController(comment);
+        return new ResponseEntity<>(comment,HttpStatus.OK);
     }
 }
