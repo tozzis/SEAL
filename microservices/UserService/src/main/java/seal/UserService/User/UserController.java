@@ -15,10 +15,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 import seal.UserService.Exceptions.BadRequestException;
 import seal.UserService.Exceptions.NotFoundException;
 
@@ -46,6 +46,12 @@ public class UserController {
         TokenAuthenticationService.validateJWTAuthentication(request);
         List<User> user = userService.getAllUsers();
         return new ResponseEntity<List<User>>(user, HttpStatus.OK);
+    }
+    
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<User> getUseById(@PathVariable long userId) {
+        User user = userService.getUserById(userId);
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
     
     @PostMapping(path = "/user/login")
