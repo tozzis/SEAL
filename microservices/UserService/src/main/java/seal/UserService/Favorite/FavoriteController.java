@@ -10,8 +10,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import javax.validation.Valid;
 import seal.UserService.Filter.TokenAuthenticationService;
-@CrossOrigin(origins = "*")
+
 @RestController
+@CrossOrigin(origins = "*", maxAge = 3600)
 public class FavoriteController {
 
     @Autowired
