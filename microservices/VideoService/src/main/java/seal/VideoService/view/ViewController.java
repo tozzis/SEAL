@@ -1,6 +1,7 @@
 package seal.VideoService.view;
 
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+import seal.VideoService.Filter.TokenAuthenticationService;
 import seal.VideoService.video.Video;
 import seal.VideoService.video.VideoAdapter;
 
@@ -25,7 +27,8 @@ public class ViewController {
     private VideoAdapter videoAdapter;
     
     @GetMapping("/views/video/{videoId}")
-    public ResponseEntity <Integer> getCountVideo(@PathVariable String videoId){
+    public ResponseEntity <Integer> getCountVideo(@PathVariable String videoId,HttpServletRequest request){
+        TokenAuthenticationService.validateJWTAuthentication(request);
         Video video = videoAdapter.findVideoById(videoId);
         if(video!=null){
             List<View> view = viewService.getCommentByVideoId(videoId);
@@ -36,7 +39,8 @@ public class ViewController {
     }
     
     @PostMapping("/views/video")
-    public ResponseEntity <View> countVideo(@RequestBody View view){
+    public ResponseEntity <View> countVideo(@RequestBody View view,HttpServletRequest request){
+        TokenAuthenticationService.validateJWTAuthentication(request);
         Video video = videoAdapter.findVideoById(view.getVideoId());
         if(video!=null){
             viewService.saveView(view);
