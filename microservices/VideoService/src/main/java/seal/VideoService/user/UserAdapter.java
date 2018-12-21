@@ -7,7 +7,7 @@ import org.springframework.web.client.RestTemplate;
 public class UserAdapter {
   public User getUserDetail(long userId) {
     RestTemplate restTemplate = new RestTemplate();
-    String url = "https://userservice-seal-top.mybluemix.net/" + userId;
+    String url = "https://userservice-seal-top.mybluemix.net/user/" + userId;
     User user = restTemplate.getForObject(url, User.class);
     return user;
   }
