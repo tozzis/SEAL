@@ -1,25 +1,28 @@
 package seal.UserService.Filter;
 
-import javax.servlet.http.HttpServletRequest;
-
-
-import static java.util.Collections.emptyList;
-
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import java.io.UnsupportedEncodingException;
-import org.springframework.stereotype.Service;
-
-import java.util.HashMap;
 
 import java.util.Base64;
-import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import seal.UserService.Exceptions.BadRequestException;
 import seal.UserService.User.User;
 import static seal.UserService.Filter.GlobalValue.EXPIRATION_TIME;
 import static seal.UserService.Filter.GlobalValue.secretKey;
+
+import java.util.Date;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Service;
+
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+
+import static java.util.Collections.emptyList;
+import java.util.HashMap;
 
 @Service
 public class TokenAuthenticationService {
@@ -65,31 +68,20 @@ public class TokenAuthenticationService {
         }
     }
 
-//    public static Authentication validateJWTAuthentication(HttpServletRequest request) {
-//        String token = request.getHeader("Authorization");
-//        System.out.println("Get Authentication : " + token);
-//        if (token != null) {
-//            // parse the token.
-//            String user = null;
-//            // ถ้าเอา Try Catch ออกมันจะบึ้มแล้ว ใชช้สิทธิต่างๆไมไ่ด้
-//            try {
-//                user = Jwts.parser() // แปลง token ที่รับมาจาก request ได้ค่า user.getId() ที่เราเก็บไว้
-//                        .setSigningKey(SECRET_KEY)
-//                        .parseClaimsJws(token.replace("Bearer", ""))//ไม่ต้องมีก็ได้เพราะไม่ใช้ Bearer 
-//                        .getBody()
-//                        .getSubject();
-//            } catch (JwtException jwtException) {
-//                System.out.println("!!! Exception /: " + jwtException.getMessage());
-//                System.out.println(user);
-//                return null;
-//
-//            }
-//
-//            return user != null
-//                    ? new UsernamePasswordAuthenticationToken(user, null, emptyList())
-//                    : // ถ้า user ไม่ใช่ null ให้ส่งค่า user ว่าผ่านได้
-//                    null;
-//        }
-//        return null;
-//    }
+    public static Authentication getAuthentication(HttpServletRequest request) {
+        String token = request.getHeader("Authorization");
+        if (token != null) {
+            String user = Jwts.parser()
+                    .setSigningKey(secretKey.getBytes())
+                    .parseClaimsJws(token.replace("Bearer ", ""))
+                    .getBody()
+                    .getSubject();
+
+            return user != null
+                    ? new UsernamePasswordAuthenticationToken(user, null, emptyList())
+                    : null;
+        }
+        return null;
+    }
+
 }
